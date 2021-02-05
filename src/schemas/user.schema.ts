@@ -15,10 +15,10 @@ const UserTypes: string[] = [
 
 @Schema()
 export class User extends Document {
-  @Prop({ maxlength: 255, minlength: 2, required: true, unique: true })
+  @Prop({ maxlength: 50, minlength: 3, required: true, unique: true })
   username: string;
 
-  @Prop({ maxlength: 255, minlength: 2, required: true, unique: true })
+  @Prop({ maxlength: 100, minlength: 2, required: true, unique: true })
   email: string;
 
   @Prop({ required: true })

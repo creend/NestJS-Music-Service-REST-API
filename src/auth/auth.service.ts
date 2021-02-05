@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { ValidUser } from 'src/interfaces/valid-user';
