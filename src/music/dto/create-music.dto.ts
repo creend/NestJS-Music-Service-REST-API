@@ -1,10 +1,4 @@
-import {
-  IsEnum,
-  isEnum,
-  MaxLength,
-  MAX_LENGTH,
-  MinLength,
-} from 'class-validator';
+import { IsEnum, MaxLength, MinLength } from 'class-validator';
 import { MusicGenre } from 'src/schemas/music.schema';
 
 export class CreateMusicDto {
