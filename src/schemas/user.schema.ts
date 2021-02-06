@@ -13,7 +13,7 @@ const UserTypes: string[] = [
   UserType.Normal,
 ];
 
-@Schema()
+@Schema({ timestamps: true })
 export class User extends Document {
   @Prop({ maxlength: 50, minlength: 3, required: true, unique: true })
   username: string;

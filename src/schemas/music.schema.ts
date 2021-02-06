@@ -15,7 +15,7 @@ const MusicGrenres: string[] = [
   MusicGenre.Reagge,
 ];
 
-@Schema()
+@Schema({ timestamps: true })
 export class Music extends Document {
   @Prop({ maxlength: 255, minlength: 2, required: true })
   title: string;
