@@ -22,6 +22,7 @@ import { Music } from 'src/schemas/music.schema';
 import { CreateMusicDto } from './dto/create-music.dto';
 import { EditMusicDto } from './dto/edit-music.dto';
 import { MusicService } from './music.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('/music')
 export class MusicController {
@@ -49,20 +50,21 @@ export class MusicController {
   }
 
   @Post('/')
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() music: CreateMusicDto): Promise<Music> {
     return await this.musicService.create(music);
   }
 
   @Delete('/:id')
-  @UseGuards(CheckIdGuard)
+  @UseGuards(CheckIdGuard, AuthGuard('jwt'))
   @HttpCode(200)
   async delete(@Param('id') id: string): Promise<Music> {
     return await this.musicService.delete(id);
   }
 
   @Patch('/:id')
-  @UseGuards(CheckIdGuard)
+  @UseGuards(CheckIdGuard, AuthGuard('jwt'))
   @HttpCode(200)
   async update(
     @Param('id') id: string,
