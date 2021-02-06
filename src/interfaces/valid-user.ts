@@ -1,7 +1,7 @@
 import { UserType } from 'src/schemas/user.schema';
 
-export type ValidUser = {
+export interface ValidUser {
   username: string;
   email: string;
   userType: UserType;
-} | null;
+}
