@@ -24,7 +24,7 @@ import { EditMusicDto } from './dto/edit-music.dto';
 import { MusicService } from './music.service';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('/music')
+@Controller('/musics')
 export class MusicController {
   constructor(@Inject(MusicService) private musicService: MusicService) {}
 

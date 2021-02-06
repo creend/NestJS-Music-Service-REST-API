@@ -49,12 +49,8 @@ export class MusicService {
   }
 
   async create(music: CreateMusicDto): Promise<Music> {
-    try {
-      const createdMusic = await this.musicModel.create(music);
-      return await createdMusic.save();
-    } catch (err) {
-      throw new BadRequestException('Cannot create music');
-    }
+    const createdMusic = await this.musicModel.create(music);
+    return await createdMusic.save();
   }
 
   async delete(id: string): Promise<Music> {
@@ -70,12 +66,8 @@ export class MusicService {
     if (!musicExist) {
       throw new NotFoundException('Cannot find music to edit');
     }
-    try {
-      await this.musicModel.findByIdAndUpdate(id, music).exec();
-      const updatedMusic = await this.musicModel.findById(id).exec();
-      return updatedMusic;
-    } catch (err) {
-      throw new BadRequestException('Cannot edit music');
-    }
+    await this.musicModel.findByIdAndUpdate(id, music).exec();
+    const updatedMusic = await this.musicModel.findById(id).exec();
+    return updatedMusic;
   }
 }
