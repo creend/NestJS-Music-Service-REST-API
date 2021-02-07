@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import * as mongoose from 'mongoose';
 
 export enum MusicGenre {
   HipHop = 'HipHop',
@@ -28,6 +29,9 @@ export class Music extends Document {
 
   @Prop({ required: true, enum: MusicGrenres })
   genre: MusicGenre;
+
+  @Prop({ required: true })
+  userId: mongoose.Schema.Types.ObjectId;
 }
 
 export const MusicSchema = SchemaFactory.createForClass(Music);

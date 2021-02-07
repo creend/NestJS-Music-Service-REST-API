@@ -48,8 +48,8 @@ export class MusicService {
     return foundMusic;
   }
 
-  async create(music: CreateMusicDto): Promise<Music> {
-    const createdMusic = await this.musicModel.create(music);
+  async create(music: CreateMusicDto, userId: string): Promise<Music> {
+    const createdMusic = await this.musicModel.create({ ...music, userId });
     return await createdMusic.save();
   }
 

@@ -13,16 +13,19 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { FindMusicsResponse } from 'src/interfaces/music';
-import { CheckIdGuard } from '../guards/check-id.guard';
+import { CheckIdParamGuard } from '../guards/check-id-param.guard';
 import { ParsePagePipe } from 'src/pipes/parse-page.pipe';
 import { Music } from 'src/schemas/music.schema';
 import { CreateMusicDto } from './dto/create-music.dto';
 import { EditMusicDto } from './dto/edit-music.dto';
 import { MusicService } from './music.service';
 import { AuthGuard } from '@nestjs/passport';
+import { request } from 'express';
+import { CheckIdUserGuard } from 'src/guards/check-id-user.guard';
 
 @Controller('/musics')
 export class MusicController {
@@ -43,28 +46,28 @@ export class MusicController {
   }
 
   @Get('/:id')
-  @UseGuards(CheckIdGuard)
+  @UseGuards(CheckIdParamGuard)
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('id') id: string): Promise<Music> {
     return await this.musicService.findOne(id);
   }
 
   @Post('/')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), CheckIdUserGuard)
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() music: CreateMusicDto): Promise<Music> {
-    return await this.musicService.create(music);
+  async create(@Body() music: CreateMusicDto, @Req() request): Promise<Music> {
+    return await this.musicService.create(music, request.user.id);
   }
 
   @Delete('/:id')
-  @UseGuards(CheckIdGuard, AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), CheckIdParamGuard)
   @HttpCode(200)
   async delete(@Param('id') id: string): Promise<Music> {
     return await this.musicService.delete(id);
   }
 
   @Patch('/:id')
-  @UseGuards(CheckIdGuard, AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), CheckIdParamGuard)
   @HttpCode(200)
   async update(
     @Param('id') id: string,
