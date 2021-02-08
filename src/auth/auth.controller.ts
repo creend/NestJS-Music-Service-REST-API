@@ -12,7 +12,7 @@ import { Login } from 'src/responses/login.response';
 import { User } from 'src/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {

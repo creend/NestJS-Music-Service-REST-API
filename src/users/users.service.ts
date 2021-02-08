@@ -5,16 +5,21 @@ import {
   NotFoundException,
   Post,
 } from '@nestjs/common';
+import * as mongoose from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
-import { CreateUserDto } from 'src/auth/dto/create-user.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ValidUser } from 'src/interfaces/valid-user';
 import { User, UserType } from 'src/schemas/user.schema';
+import { Music } from 'src/schemas/music.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Music.name) private musicModel: Model<Music>,
+  ) {}
 
   async findByEmail(email: string): Promise<User> {
     return this.userModel.findOne({ email });
@@ -30,6 +35,18 @@ export class UsersService {
       userType: user.userType,
       email: user.email,
     };
+  }
+
+  async findUsersMusics(id: string): Promise<Music[]> {
+    const musics = await this.musicModel
+      .find({
+        userId: (id as unknown) as mongoose.Schema.Types.ObjectId,
+      })
+      .exec();
+    if (!musics.length) {
+      throw new BadRequestException('This user hasnt musics');
+    }
+    return musics;
   }
 
   async registerUser(user: CreateUserDto): Promise<User> {
