@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { MusicModule } from './music/music.module';
+import { MusicModule } from './musics/musics.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 

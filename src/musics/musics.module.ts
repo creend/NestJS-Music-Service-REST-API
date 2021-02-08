@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Music, MusicSchema } from 'src/schemas/music.schema';
 import { MusicController } from './music.controller';
-import { MusicService } from './music.service';
+import { MusicService } from './musics.service';
 
 @Module({
   imports: [

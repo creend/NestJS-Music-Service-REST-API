@@ -22,7 +22,7 @@ import { ParsePagePipe } from 'src/pipes/parse-page.pipe';
 import { Music } from 'src/schemas/music.schema';
 import { CreateMusicDto } from './dto/create-music.dto';
 import { EditMusicDto } from './dto/edit-music.dto';
-import { MusicService } from './music.service';
+import { MusicService } from './musics.service';
 import { AuthGuard } from '@nestjs/passport';
 import { request } from 'express';
 import { CheckIdUserGuard } from 'src/guards/check-id-user.guard';
