@@ -1,14 +1,19 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Music, MusicSchema } from 'src/schemas/music.schema';
-import { MusicController } from './music.controller';
-import { MusicService } from './musics.service';
+import { UsersModule } from 'src/users/users.module';
+import { MailModule } from '../mail/mail.module';
+import { MailService } from '../mail/mail.service';
+import { Music, MusicSchema } from '../schemas/music.schema';
+import { MusicsController } from './musics.controller';
+import { MusicsService } from './musics.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Music.name, schema: MusicSchema }]),
+    forwardRef(() => MailModule),
+    forwardRef(() => UsersModule),
   ],
-  controllers: [MusicController],
-  providers: [MusicService],
+  controllers: [MusicsController],
+  providers: [MusicsService],
 })
-export class MusicModule {}
+export class MusicsModule {}

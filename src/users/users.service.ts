@@ -1,6 +1,8 @@
 import {
   BadGatewayException,
   BadRequestException,
+  ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
   Post,
@@ -9,47 +11,55 @@ import * as mongoose from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { ValidUser } from 'src/interfaces/valid-user';
-import { User, UserType } from 'src/schemas/user.schema';
-import { Music } from 'src/schemas/music.schema';
-
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { ValidUser } from '../interfaces/valid-user';
+import { User, UserType } from '../schemas/user.schema';
+import { EditUserDto } from './dto/edit-user.dto';
+import { MailService } from '../mail/mail.service';
+import { JwtService } from '@nestjs/jwt';
+import {
+  DeleteUserResponse,
+  EditUserResponse,
+  RegisterResponse,
+  FindUserResponse,
+} from 'src/responses/users.response';
+import { DeleteUserDto } from './dto/delete-user.dto';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Music.name) private musicModel: Model<Music>,
+    @Inject(MailService) private mailService: MailService,
+    private jwtService: JwtService,
   ) {}
 
+  filter(user: any): ValidUser {
+    const { username, email, userType, createdAt, updatedAt, _id } = user;
+    return { username, email, userType, createdAt, updatedAt, id: _id };
+  }
+
   async findByEmail(email: string): Promise<User> {
-    return this.userModel.findOne({ email });
+    return await this.userModel.findOne({ email });
   }
 
-  async findById(id: string): Promise<ValidUser> {
-    const user: User = await this.userModel.findById(id);
+  async findById(id: string): Promise<FindUserResponse> {
+    const user: any = await this.userModel.findById(id).exec();
     if (!user) {
-      throw new BadRequestException(`Cannot find user with id ${id}`);
+      throw new NotFoundException(`Cannot find user with id ${id}`);
     }
-    return {
-      username: user.username,
-      userType: user.userType,
-      email: user.email,
-    };
+    return this.filter(user);
   }
 
-  async findUsersMusics(id: string): Promise<Music[]> {
-    const musics = await this.musicModel
-      .find({
-        userId: (id as unknown) as mongoose.Schema.Types.ObjectId,
-      })
-      .exec();
-    if (!musics.length) {
-      throw new BadRequestException('This user hasnt musics');
+  async verifyUser(token: string): Promise<string> {
+    const { id } = this.jwtService.verify(token);
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new NotFoundException('Cannot find user');
     }
-    return musics;
+    await this.userModel.findByIdAndUpdate(id, { verified: true });
+    return 'Succesfuelly verified user';
   }
 
-  async registerUser(user: CreateUserDto): Promise<User> {
+  async registerUser(user: CreateUserDto): Promise<RegisterResponse> {
     const { username, email, password, retypedPassword } = user;
     const emailExist = await this.userModel.findOne({ email }).exec();
     const usernameExist = await this.userModel.findOne({ username }).exec();
@@ -73,6 +83,51 @@ export class UsersService {
       email,
     });
     await createdUser.save();
-    return createdUser;
+    const token = this.jwtService.sign({ username, id: createdUser._id });
+
+    await this.mailService.sendMail(
+      email,
+      'Confirm your registration',
+      this.mailService.renederHtml('confirm-registration', { username, token }),
+    );
+    return this.filter(createdUser);
+  }
+
+  async deleteAccount(
+    userDto: DeleteUserDto,
+    userToDeleteId: string,
+    deletingUserId: string,
+  ): Promise<DeleteUserResponse> {
+    const { password, retypedPassword } = userDto;
+    if (password !== retypedPassword) {
+      throw new BadRequestException('Passwords are not identical');
+    }
+    const userToDelete = await this.userModel.findById(userToDeleteId);
+    if (!userToDelete) {
+      throw new NotFoundException(`Cannot find user with id ${userToDeleteId}`);
+    }
+    if (userToDeleteId !== deletingUserId) {
+      throw new ForbiddenException('You cannot to delete others account');
+    }
+    if (!(await bcrypt.compare(password, userToDelete.passwordHash))) {
+      throw new BadRequestException('Password is incorrect');
+    }
+    return this.filter(await this.userModel.findByIdAndDelete(userToDeleteId));
+  }
+
+  async editAccount(
+    userToEditId: string,
+    editingUserId: string,
+    user: EditUserDto,
+  ): Promise<EditUserResponse> {
+    const userToEdit = await this.userModel.findById(userToEditId);
+    if (!userToEdit) {
+      throw new NotFoundException(`Cannot find user with id ${userToEdit}`);
+    }
+    if (userToEditId !== editingUserId) {
+      throw new ForbiddenException('You cannot to edit others account');
+    }
+    await this.userModel.findByIdAndUpdate(userToEdit, user);
+    return this.filter(this.userModel.findById(userToEditId));
   }
 }

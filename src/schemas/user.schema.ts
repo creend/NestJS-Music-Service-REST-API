@@ -26,6 +26,9 @@ export class User extends Document {
 
   @Prop({ required: true, enum: UserTypes })
   userType: UserType;
+
+  @Prop({ default: false })
+  verified?: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

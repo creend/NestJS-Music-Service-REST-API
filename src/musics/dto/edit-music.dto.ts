@@ -1,15 +1,21 @@
-import { IsDefined, IsEnum, MaxLength } from 'class-validator';
-import { MusicGenre } from 'src/schemas/music.schema';
+import { IsEnum, IsOptional, Length, MaxLength } from 'class-validator';
+import { MusicGenre } from '../../schemas/music.schema';
 
 export class EditMusicDto {
-  @MaxLength(255)
+  @IsOptional()
+  @Length(1, 255)
   title?: string;
 
+  @IsOptional()
+  @Length(1, 255)
   length?: number;
 
-  @MaxLength(255)
+  @IsOptional()
+  @Length(1, 255)
   author?: string;
 
+  @IsOptional()
+  @Length(1, 255)
   @IsEnum(MusicGenre)
   genre?: MusicGenre;
 }

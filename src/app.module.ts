@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { MusicModule } from './musics/musics.module';
+import { MusicsModule } from './musics/musics.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -13,9 +14,10 @@ import { UsersModule } from './users/users.module';
     MongooseModule.forRoot(process.env.DB_URL, {
       useFindAndModify: false,
     }),
-    MusicModule,
+    MusicsModule,
     AuthModule,
     UsersModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

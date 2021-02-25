@@ -9,7 +9,7 @@ export enum MusicGenre {
   Reagge = 'Reagge',
 }
 
-const MusicGrenres: string[] = [
+const MusicGrenres = [
   MusicGenre.HipHop,
   MusicGenre.Pop,
   MusicGenre.Country,
@@ -32,6 +32,9 @@ export class Music extends Document {
 
   @Prop({ required: true })
   userId: mongoose.Schema.Types.ObjectId;
+
+  @Prop({ default: null })
+  musicFileName: string;
 }
 
 export const MusicSchema = SchemaFactory.createForClass(Music);
