@@ -20,8 +20,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
     if (exception instanceof HttpException) {
+      const errorResponse: any = exception.getResponse();
       response.status(status).send({
-        message: exception.message,
+        message: errorResponse.message,
         status,
       });
     } else {

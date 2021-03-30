@@ -8,12 +8,12 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { MusicGenre } from '../../schemas/music.schema';
+import { MusicGenre } from 'src/enums/music-genre';
 
 export class CreateMusicDto {
-  @MaxLength(255)
-  @MinLength(2)
-  @IsString()
+  @MaxLength(255, { message: 'tittle za dlogi' })
+  @MinLength(2, { message: 'tittle za dlogi' })
+  @IsString({ message: 'niestring' })
   title: string;
 
   @IsNumber()

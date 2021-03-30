@@ -13,8 +13,9 @@ export class ParsePagePipe implements PipeTransform {
       return this.defaultValue;
     }
     const page = parseInt(value);
+
     if (isNaN(page)) {
-      throw new BadRequestException('Page must be an inteeger');
+      return this.defaultValue;
     }
     if (this.maxValue && page > this.maxValue) {
       throw new BadRequestException(`Page is bigger than ${this.maxValue}`);

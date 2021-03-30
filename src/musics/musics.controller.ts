@@ -18,6 +18,7 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
 import * as path from 'path';
 import { FindMusicsResponse } from '../responses/musics.response';
@@ -40,12 +41,12 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerStorage, storageDir } from '../utils/storage';
 import { MulterDiskUploadedFiles } from '../interfaces/files';
-import { validate } from 'class-validator';
 import { ParseSortPipe } from 'src/pipes/parse-sort.pipe';
 import { SortTypes } from 'src/interfaces/find-query';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 @Controller('/musics')
 export class MusicsController {
-  constructor(@Inject(MusicsService) private MusicsService: MusicsService) {}
+  constructor(private readonly MusicsService: MusicsService) {}
 
   @Get('/')
   @HttpCode(HttpStatus.OK)
@@ -89,8 +90,24 @@ export class MusicsController {
   ): Promise<FindMusicsResponse> {
     return await this.MusicsService.find({ page, perPage, title, sort }, id);
   }
+  @Get('/users/username/:username')
+  @HttpCode(HttpStatus.OK)
+  async findUsersMusicsByUsername(
+    @Param('username') username: string,
+    @Query('page', new ParsePagePipe(1)) page: number,
+    @Query('per_page', new ParsePagePipe(2, 10)) perPage: number,
+    @Query('sort', new ParseSortPipe(SortTypes.ASCENDING)) sort: SortTypes,
+    @Query('title') title: string,
+  ): Promise<FindMusicsResponse> {
+    return await this.MusicsService.find(
+      { page, perPage, title, sort },
+      undefined,
+      username,
+    );
+  }
 
   @Post('/')
+  @UseGuards(JwtAuthGuard, CheckIdUserGuard)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -102,14 +119,18 @@ export class MusicsController {
       { storage: multerStorage(path.join(storageDir(), 'musics'), 'mp3') },
     ),
   )
-  @UseGuards(AuthGuard('jwt'), CheckIdUserGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() music: CreateMusicDto,
     @UploadedFiles() files: MulterDiskUploadedFiles,
     @UserObj() user: LoginPayload,
   ): Promise<CreateMusicResponse> {
-    return await this.MusicsService.create(music, user.id, files);
+    return await this.MusicsService.create(
+      music,
+      user.id,
+      user.username,
+      files,
+    );
   }
 
   @Delete('/:id')

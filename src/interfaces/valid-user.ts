@@ -1,4 +1,4 @@
-import { UserType } from '../schemas/user.schema';
+import { UserType } from 'src/enums/user-type';
 
 export interface ValidUser {
   username: string;

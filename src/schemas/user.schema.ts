@@ -1,11 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-
-export enum UserType {
-  Admin = 'admin',
-  Moderator = 'moderator',
-  Normal = 'normal',
-}
+import { UserType } from '../enums/user-type';
 
 const UserTypes: string[] = [
   UserType.Admin,

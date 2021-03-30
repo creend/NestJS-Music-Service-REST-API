@@ -1,13 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
-
-export enum MusicGenre {
-  HipHop = 'HipHop',
-  Pop = 'Pop',
-  Country = 'Counry',
-  Reagge = 'Reagge',
-}
+import { MusicGenre } from 'src/enums/music-genre';
 
 const MusicGrenres = [
   MusicGenre.HipHop,
@@ -33,7 +27,10 @@ export class Music extends Document {
   @Prop({ required: true })
   userId: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ default: null })
+  @Prop({ maxlength: 50, minlength: 3, required: true })
+  username: string;
+
+  @Prop({ required: true })
   musicFileName: string;
 }
 

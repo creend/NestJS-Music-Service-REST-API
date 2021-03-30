@@ -29,12 +29,13 @@ import { storageDir } from '../utils/storage';
 import { validate } from 'class-validator';
 import { MusicInterface } from '../interfaces/music';
 import { UsersService } from 'src/users/users.service';
+import { FindUserBy } from 'src/enums/find-user-by';
 @Injectable()
 export class MusicsService {
   constructor(
     @InjectModel(Music.name) private musicModel: Model<Music>,
-    @Inject(MailService) private mailSercice: MailService,
-    @Inject(UsersService) private usersService: UsersService,
+    private readonly mailSercice: MailService,
+    private readonly usersService: UsersService,
   ) {}
 
   filter(music: any): MusicInterface {
@@ -44,6 +45,7 @@ export class MusicsService {
       author,
       genre,
       _id,
+      username,
       userId,
       createdAt,
       updatedAt,
@@ -57,12 +59,14 @@ export class MusicsService {
       userId,
       createdAt,
       updatedAt,
+      username,
     };
   }
 
   async find(
     queryParams: FindQuery,
     userId?: string,
+    username?: string,
   ): Promise<FindMusicsResponse> {
     const { perPage, page, title, sort } = queryParams;
     const findRules: FindRules = {
@@ -70,10 +74,9 @@ export class MusicsService {
     };
     if (userId) {
       findRules.userId = (userId as unknown) as mongoose.Schema.Types.ObjectId;
-      const user = await this.usersService.findById(userId);
-      if (!user) {
-        throw new NotFoundException('Cannot find user with given ID');
-      }
+    }
+    if (username) {
+      findRules.username = username;
     }
     const skip = (page - 1) * perPage;
 
@@ -120,13 +123,18 @@ export class MusicsService {
   async create(
     music: CreateMusicDto,
     userId: string,
+    username: string,
     files: MulterDiskUploadedFiles,
   ): Promise<CreateMusicResponse> {
     const mp3 = files?.musicFile?.[0] ?? null;
+    if (!mp3) {
+      throw new BadRequestException('Music file is not given');
+    }
     try {
       const createdMusic = await this.musicModel.create({
         ...music,
         userId,
+        username,
         musicFileName: mp3?.filename,
       });
       return this.filter(await createdMusic.save());
@@ -155,17 +163,19 @@ export class MusicsService {
       throw new ForbiddenException(`You cannot delete other user's music`);
     }
     if (music.musicFileName) {
-      fs.unlink(
-        path.resolve(storageDir(), 'musics', music.musicFileName),
-        (err) => {
-          if (err) {
-            throw new InternalServerErrorException(err.message);
-          }
-        },
-      );
+      this.deleteMusicFile(music.musicFileName);
     }
     return this.filter(await this.musicModel.findByIdAndDelete(id).exec());
   }
+
+  async deleteMusicFile(filename: string) {
+    fs.unlink(path.resolve(storageDir(), 'musics', filename), (err) => {
+      if (err) {
+        throw new InternalServerErrorException(err.message);
+      }
+    });
+  }
+
   async update(
     id: string,
     music: EditMusicDto,

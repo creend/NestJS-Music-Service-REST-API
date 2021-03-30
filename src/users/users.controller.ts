@@ -25,15 +25,22 @@ import {
   EditUserResponse,
 } from '../responses/users.response';
 import { DeleteUserDto } from './dto/delete-user.dto';
+import { FindUserBy } from 'src/enums/find-user-by';
 
 @Controller('users')
 export class UsersController {
-  constructor(@Inject(UsersService) private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
   @Get('/:id')
   @UseGuards(CheckIdParamGuard)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('id') id: string) {
-    return this.usersService.findById(id);
+    return this.usersService.findOne(id, FindUserBy.ID);
+  }
+
+  @Get('/username/:username')
+  @HttpCode(HttpStatus.OK)
+  async findByUsername(@Param('username') username: string) {
+    return this.usersService.findOne(username, FindUserBy.USERNAME);
   }
 
   @Get('/verify/:token')

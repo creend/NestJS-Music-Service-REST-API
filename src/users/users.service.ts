@@ -13,7 +13,8 @@ import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ValidUser } from '../interfaces/valid-user';
-import { User, UserType } from '../schemas/user.schema';
+import { User } from '../schemas/user.schema';
+import { UserType } from '../enums/user-type';
 import { EditUserDto } from './dto/edit-user.dto';
 import { MailService } from '../mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
@@ -24,12 +25,14 @@ import {
   FindUserResponse,
 } from 'src/responses/users.response';
 import { DeleteUserDto } from './dto/delete-user.dto';
+import { FindUserBy } from 'src/enums/find-user-by';
+import { Response } from 'express';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    @Inject(MailService) private mailService: MailService,
-    private jwtService: JwtService,
+    private readonly mailService: MailService,
+    private readonly jwtService: JwtService,
   ) {}
 
   filter(user: any): ValidUser {
@@ -41,10 +44,13 @@ export class UsersService {
     return await this.userModel.findOne({ email });
   }
 
-  async findById(id: string): Promise<FindUserResponse> {
-    const user: any = await this.userModel.findById(id).exec();
+  async findOne(data: string, by: FindUserBy): Promise<FindUserResponse> {
+    const user: any =
+      by === FindUserBy.ID
+        ? await this.userModel.findById(data).exec()
+        : await this.userModel.findOne({ username: data });
     if (!user) {
-      throw new NotFoundException(`Cannot find user with id ${id}`);
+      throw new NotFoundException(`Cannot find user with given data`);
     }
     return this.filter(user);
   }
