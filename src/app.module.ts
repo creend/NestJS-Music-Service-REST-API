@@ -12,6 +12,8 @@ import { MailModule } from './mail/mail.module';
       envFilePath: '.env',
     }),
     MongooseModule.forRoot(process.env.DB_URL, {
+      useCreateIndex: true,
+      useNewUrlParser: true,
       useFindAndModify: false,
     }),
     MusicsModule,

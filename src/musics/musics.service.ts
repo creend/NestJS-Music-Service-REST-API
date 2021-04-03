@@ -30,10 +30,12 @@ import { validate } from 'class-validator';
 import { MusicInterface } from '../interfaces/music';
 import { UsersService } from 'src/users/users.service';
 import { FindUserBy } from 'src/enums/find-user-by';
+import { Cache } from 'cache-manager';
 @Injectable()
 export class MusicsService {
   constructor(
     @InjectModel(Music.name) private musicModel: Model<Music>,
+    // @Inject('CACHE_MANAGER') private readonly cacheManager: Cache,
     private readonly mailSercice: MailService,
     private readonly usersService: UsersService,
   ) {}

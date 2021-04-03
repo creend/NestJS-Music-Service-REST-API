@@ -1,4 +1,11 @@
-import { forwardRef, Module } from '@nestjs/common';
+import {
+  CacheInterceptor,
+  CacheModule,
+  forwardRef,
+  Module,
+} from '@nestjs/common';
+import * as redisStore from 'cache-manager-redis-store';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from 'src/users/users.module';
 import { MailModule } from '../mail/mail.module';
@@ -12,8 +19,15 @@ import { MusicsService } from './musics.service';
     MongooseModule.forFeature([{ name: Music.name, schema: MusicSchema }]),
     forwardRef(() => MailModule),
     forwardRef(() => UsersModule),
+    // CacheModule.register({ store: redisStore }),
   ],
   controllers: [MusicsController],
-  providers: [MusicsService],
+  providers: [
+    MusicsService,
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: CacheInterceptor,
+    // },
+  ],
 })
 export class MusicsModule {}

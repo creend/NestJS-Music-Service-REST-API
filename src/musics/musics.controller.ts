@@ -1,5 +1,8 @@
 import {
   Body,
+  CacheInterceptor,
+  CacheKey,
+  CacheTTL,
   Controller,
   DefaultValuePipe,
   Delete,
@@ -45,10 +48,13 @@ import { ParseSortPipe } from 'src/pipes/parse-sort.pipe';
 import { SortTypes } from 'src/interfaces/find-query';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 @Controller('/musics')
+// @UseInterceptors(CacheInterceptor)
 export class MusicsController {
   constructor(private readonly MusicsService: MusicsService) {}
 
   @Get('/')
+  // @CacheKey('musics')
+  // @CacheTTL(100)
   @HttpCode(HttpStatus.OK)
   async find(
     @Query('page', new ParsePagePipe(1)) page: number,

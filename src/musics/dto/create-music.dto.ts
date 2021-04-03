@@ -11,9 +11,9 @@ import {
 import { MusicGenre } from 'src/enums/music-genre';
 
 export class CreateMusicDto {
-  @MaxLength(255, { message: 'tittle za dlogi' })
-  @MinLength(2, { message: 'tittle za dlogi' })
-  @IsString({ message: 'niestring' })
+  @MaxLength(255)
+  @MinLength(2)
+  @IsString()
   title: string;
 
   @IsNumber()

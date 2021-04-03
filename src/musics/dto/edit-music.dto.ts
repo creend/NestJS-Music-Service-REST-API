@@ -1,4 +1,11 @@
-import { IsEnum, IsOptional, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { MusicGenre } from 'src/enums/music-genre';
 
 export class EditMusicDto {
@@ -8,8 +15,8 @@ export class EditMusicDto {
   title?: string;
 
   @IsOptional()
-  @MinLength(1)
-  @MaxLength(255)
+  @IsNumber()
+  @IsPositive()
   length?: number;
 
   @IsOptional()
