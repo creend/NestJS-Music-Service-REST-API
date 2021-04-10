@@ -5,14 +5,21 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { MailModule } from '../mail/mail.module';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import jwtConfig from 'src/config/jwt.config';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MailModule,
-    ConfigModule.forRoot({ envFilePath: '.env' }),
-    JwtModule.register({ secret: process.env.TOKEN_SECRET }),
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync({
+      imports: [ConfigModule.forFeature(jwtConfig)],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('jwt.secretToken'),
+      }),
+    }),
   ],
   providers: [UsersService],
   exports: [UsersService],

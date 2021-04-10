@@ -1,20 +1,24 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MusicsModule } from './musics/musics.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
+import mongooseConfig from './config/mongoose.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: '.env',
-    }),
-    MongooseModule.forRoot(process.env.DB_URL, {
-      useCreateIndex: true,
-      useNewUrlParser: true,
-      useFindAndModify: false,
+    ConfigModule.forRoot(),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule.forFeature(mongooseConfig)],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get('mongoose.dbUrl'),
+        useCreateIndex: true,
+        useNewUrlParser: true,
+        useFindAndModify: false,
+      }),
+      inject: [ConfigService],
     }),
     MusicsModule,
     AuthModule,

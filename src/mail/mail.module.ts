@@ -1,31 +1,20 @@
 import { MailerModule, PugAdapter } from '@nest-modules/mailer';
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import mailerConfig from 'src/config/mailer.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '.env' }),
-    MailerModule.forRoot({
-      transport: {
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASSWORD,
-        },
-        service: 'gmail',
-      },
-      template: {
-        dir: './emails',
-        adapter: new PugAdapter(),
-        options: {
-          strict: true,
-        },
-      },
+    ConfigModule.forFeature(mailerConfig),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule.forFeature(mailerConfig)],
+      useFactory: async (configService: ConfigService) =>
+        configService.get('mailer'),
+      inject: [ConfigService],
     }),
   ],
   providers: [MailService],
   exports: [MailService],
 })
 export class MailModule {}
-console.log(process.env.EMAIL);
-console.log(process.env.PASSWORD);
