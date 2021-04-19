@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import {
   IsEnum,
   IsNumber,
@@ -7,26 +8,6 @@ import {
   MinLength,
 } from 'class-validator';
 import { MusicGenre } from 'src/enums/music-genre';
+import { CreateMusicDto } from './create-music.dto';
 
-export class EditMusicDto {
-  @IsOptional()
-  @MinLength(1)
-  @MaxLength(255)
-  title?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @IsPositive()
-  length?: number;
-
-  @IsOptional()
-  @MinLength(1)
-  @MaxLength(255)
-  author?: string;
-
-  @IsOptional()
-  @MinLength(1)
-  @MaxLength(255)
-  @IsEnum(MusicGenre)
-  genre?: MusicGenre;
-}
+export class EditMusicDto extends PartialType(CreateMusicDto) {}

@@ -50,7 +50,7 @@ export class UsersService {
         ? await this.userModel.findById(data).exec()
         : await this.userModel.findOne({ username: data });
     if (!user) {
-      throw new NotFoundException(`Cannot find user with given data`);
+      throw new NotFoundException(`Cannot find user `);
     }
     return this.filter(user);
   }
