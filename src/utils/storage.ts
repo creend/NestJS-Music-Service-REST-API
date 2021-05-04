@@ -3,8 +3,9 @@ import { diskStorage } from 'multer';
 import * as mime from 'mime';
 import { v4 as uuid } from 'uuid';
 
-export function storageDir() {
-  return path.join(__dirname, '../../storage');
+export function storageDir(): string {
+  // return path.join(__dirname, '../../storage');
+  return 'storage';
 }
 
 export function multerStorage(dest: string, extension?: string) {

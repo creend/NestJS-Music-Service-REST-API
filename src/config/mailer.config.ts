@@ -7,10 +7,10 @@ export default registerAs('mailer', () => ({
       user: process.env.EMAIL,
       pass: process.env.PASSWORD,
     },
-    service: 'gmail',
+    service: process.env.MAIL_SERVICE,
   },
   template: {
-    dir: '../emails',
+    dir: process.env.TEMPLATE_DIRECTORY_PATH,
     adapter: new PugAdapter(),
     options: {
       strict: true,

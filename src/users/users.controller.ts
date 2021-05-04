@@ -27,7 +27,7 @@ import {
 import { DeleteUserDto } from './dto/delete-user.dto';
 import { FindUserBy } from 'src/enums/find-user-by';
 
-@Controller('users')
+@Controller('/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Get('/:id')

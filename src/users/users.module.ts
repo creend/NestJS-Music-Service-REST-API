@@ -7,12 +7,14 @@ import { MailModule } from '../mail/mail.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
+import appConfig from 'src/config/app.config';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MailModule,
     ConfigModule.forFeature(jwtConfig),
+    ConfigModule.forFeature(appConfig),
     JwtModule.registerAsync({
       imports: [ConfigModule.forFeature(jwtConfig)],
       inject: [ConfigService],

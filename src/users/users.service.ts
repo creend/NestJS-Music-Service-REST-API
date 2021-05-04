@@ -27,12 +27,14 @@ import {
 import { DeleteUserDto } from './dto/delete-user.dto';
 import { FindUserBy } from 'src/enums/find-user-by';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   filter(user: any): ValidUser {
@@ -90,11 +92,17 @@ export class UsersService {
     });
     await createdUser.save();
     const token = this.jwtService.sign({ username, id: createdUser._id });
-
     await this.mailService.sendMail(
       email,
       'Confirm your registration',
-      this.mailService.renederHtml('confirm-registration', { username, token }),
+      this.mailService.renederHtml('confirm-registration', {
+        username,
+        token,
+        url:
+          this.configService.get('app.env') === 'development'
+            ? this.configService.get('app.devUrl')
+            : this.configService.get('app.prodUrl'),
+      }),
     );
     return this.filter(createdUser);
   }

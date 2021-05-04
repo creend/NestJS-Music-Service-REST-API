@@ -6,18 +6,14 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
 import mongooseConfig from './config/mongoose.config';
-
+import { AppController } from './app.controller';
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule.forFeature(mongooseConfig)],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get('mongoose.dbUrl'),
-        useCreateIndex: true,
-        useNewUrlParser: true,
-        useFindAndModify: false,
-      }),
+      useFactory: async (configService: ConfigService) =>
+        configService.get('mongoose'),
       inject: [ConfigService],
     }),
     MusicsModule,
@@ -25,7 +21,7 @@ import mongooseConfig from './config/mongoose.config';
     UsersModule,
     MailModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

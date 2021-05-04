@@ -1,5 +1,8 @@
 import { registerAs } from '@nestjs/config';
 
 export default registerAs('mongoose', () => ({
-  dbUrl: process.env.DB_URL,
+  uri: process.env.DB_URL,
+  useCreateIndex: true,
+  useNewUrlParser: true,
+  useFindAndModify: false,
 }));

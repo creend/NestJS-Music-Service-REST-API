@@ -26,14 +26,13 @@ import {
 } from 'src/responses/auth.response';
 import { AuthLoginDto } from './dto/auth-login.dto';
 
-@Controller('auth')
+@Controller('/auth')
 export class AuthController {
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
   ) {}
 
-  // @UseGuards(AuthGuard('local'))
   @HttpCode(HttpStatus.OK)
   @Post('/login')
   async login(

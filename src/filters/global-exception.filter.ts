@@ -4,10 +4,9 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  NotFoundException,
 } from '@nestjs/common';
 
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -25,7 +24,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         status,
       });
     } else {
-      // console.log(exception);
+      console.log(exception);
       response
         .status(status)
         .send({ message: 'INTERNAL SERVER ERROR', status });
